@@ -31,9 +31,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        scaffoldBackgroundColor: Colors.grey[200],
-        primaryColor: Color(0xFF04061a),
-      ),
+          scaffoldBackgroundColor: Colors.grey[200],
+          primaryColor: Color(0xFF04061a),
+          accentColor: Colors.grey[200]),
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
           builder: (context, state) {
         if (state is AuthenticationAuthenticated) {
