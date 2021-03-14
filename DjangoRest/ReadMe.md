@@ -1,1 +1,1 @@
-After cloning nstall requirements using 'pipenv install' to setup virtual environment and install dependencies.
+After cloning repo do 'pipenv install' to setup virtual environment and install dependencies.
