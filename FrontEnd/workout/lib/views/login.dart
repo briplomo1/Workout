@@ -16,6 +16,7 @@ import 'package:workout/services/api.dart';
 import 'package:workout/models/models.dart';
 import 'package:workout/views/home.dart';
 import 'dart:convert';
+import 'package:workout/constants.dart';
 
 import 'package:workout/views/register.dart';
 
@@ -225,14 +226,13 @@ class __SignInFormState extends State<_SignInForm> {
                             onPressed: state is LoginLoading
                                 ? () {}
                                 : _onLoginButtonPressed,
-                            child: Text(
-                              'SIGN IN',
-                              style: GoogleFonts.ptSansCaption(
-                                color: Colors.grey[400],
-                                fontSize: 20,
-                                letterSpacing: 3,
-                              ),
-                            ),
+                            child: Text('SIGN IN', style: buttonsText
+                                //GoogleFonts.ptSansCaption(
+                                //   color: Colors.grey[400],
+                                //   fontSize: 20,
+                                //   letterSpacing: 3,
+                                // ),
+                                ),
                           ),
                         ),
                       ),
