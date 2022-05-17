@@ -31,6 +31,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     try {
       final user = await _authenticationService.userLogin(event.user);
       if (user != null) {
+        print("User logged in...");
         _authenticationBloc.add(UserLoggedIn(user: user));
         yield LoginSuccess();
         yield LoginInitial();

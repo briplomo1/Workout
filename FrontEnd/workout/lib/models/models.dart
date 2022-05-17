@@ -15,6 +15,7 @@ class User {
       this.detail});
 
   factory User.fromJson(Map<String, dynamic> data) {
+    print("user from json parsing");
     if (data != null) {
       var list = data['sets'] as List;
       List<Set> setsList = list.map((e) => Set.fromJson(e)).toList();
@@ -26,6 +27,7 @@ class User {
           lastName: data['last_name'] ?? "",
           sets: setsList);
     } else {
+      print("user is null");
       return null;
     }
   }

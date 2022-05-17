@@ -22,8 +22,8 @@ environment:
 
 dependencies:
 
-  bloc: ^6.0.3
-  flutter_bloc: ^6.0.6
+  bloc: 
+  flutter_bloc: 
   equatable: ^1.0.2
   flutter_secure_storage: 
   uuid: ^2.1.0

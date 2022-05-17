@@ -29,6 +29,7 @@ class AuthenticationBloc
   }
 
   Stream<AuthenticationState> _mapAppLoadedToState(AppLoaded event) async* {
+    print("Determining auth state");
     yield AuthenticationLoading();
     try {
       User currentUser;
@@ -37,6 +38,7 @@ class AuthenticationBloc
       }
       if (currentUser != null) {
         yield AuthenticationAuthenticated(user: currentUser);
+        print("Yielding authenticated");
       } else {
         print("yielding not authenticated");
         yield AuthenticationNotAuthenticated();

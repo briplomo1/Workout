@@ -109,12 +109,14 @@ class AuthenticationService {
         'Authorization': 'Bearer $accessToken',
       },
     );
+    print("Json body: ");
     print(json.decode(res.body));
     User user = User.fromJson(json.decode(res.body));
     //If access token is invalid makes a request
     // for new access token with refresh token
     //
     if (user.detail != '') {
+      print("User detail: ");
       print(user.detail);
       bool tokenIsValid = await getRefreshToken();
       if (!tokenIsValid) {
@@ -125,7 +127,8 @@ class AuthenticationService {
         return tryAfterRefresh;
       }
     }
-    print(user.sets[1].url);
+    print("returning user to authetication bloc");
+    print(user.firstName);
     return user;
   }
 
@@ -159,7 +162,7 @@ class AuthenticationService {
       // if reviece refresh from api, then update access token and return true
       Map<String, dynamic> data = json.decode(res.body);
       accessToken = data['access'];
-      print("new access token saved to variable");
+      print("new access token saved to variable: Returning true");
       return true;
     }
   }
