@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import  User, UserProfile, Set
+from .models import  Exercise, User, UserProfile, Set, Workout, WorkoutSet
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
 
@@ -32,3 +32,6 @@ class UserAdmin(BaseUserAdmin):
 
 # Register your models here.
 admin.site.register(Set)
+admin.site.register(WorkoutSet)
+admin.site.register(Workout)
+admin.site.register(Exercise)

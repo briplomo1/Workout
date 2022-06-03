@@ -35,14 +35,22 @@ class User {
   Map<String, dynamic> toJson() => {};
 }
 
+//TODO: add date to all sets
 class Set {
   String url;
   String name;
   String owner;
   int reps;
   int weight;
+  DateTime dateCreated;
 
-  Set({this.url, this.name, this.owner, this.reps, this.weight});
+  Set(
+      {this.url,
+      this.name,
+      this.owner,
+      this.reps,
+      this.weight,
+      this.dateCreated});
 
   factory Set.fromJson(Map<String, dynamic> data) {
     int weights = int.parse(data['weight']);
@@ -52,6 +60,7 @@ class Set {
       owner: data['owner'] ?? '',
       reps: data['reps'] ?? 0,
       weight: weights ?? 0,
+      dateCreated: DateTime.parse(data['date']) ?? '',
     );
   }
 }

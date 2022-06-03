@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -40,7 +42,7 @@ class LoginUser extends StatelessWidget {
                   children: <Widget>[
                     Text(state.message),
                     RaisedButton(
-                      textColor: Theme.of(context).accentColor,
+                      textColor: Theme.of(context).colorScheme.secondary,
                       child: Text('Retry'),
                       onPressed: () {
                         authBloc.add(AppLoaded());
@@ -90,8 +92,6 @@ class __SignInFormState extends State<_SignInForm> {
   LoginRequest loginModel;
   AuthenticationService auth;
   StorageService storage;
-  final _passwordController = TextEditingController();
-  final _emailController = TextEditingController();
 
   @override
   void initState() {

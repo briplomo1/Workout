@@ -1,3 +1,5 @@
+from tkinter import CASCADE
+from unicodedata import name
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
@@ -21,14 +23,40 @@ class UserProfile(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     dob = models.DateField()
 
+class Exercise(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Set(models.Model):
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='sets')  
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='sets')  
     date = models.DateTimeField(auto_now_add=True)
-    name = models.CharField(max_length=200)
+    exercise = models.ManyToManyField(Exercise, )
     reps = models.PositiveSmallIntegerField()
-    weight = models.CharField(max_length=50)
+    weight = models.DecimalField(max_digits=10, decimal_places=2)
 
-    def __string__(self):
+    def __str__(self):
+        return self.exercise.all().first().name
+
+
+
+class Workout(models.Model):
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='workouts')
+    name = models.CharField(max_length=50, )
+    date_created = models.DateField(auto_now_add=True, )
+
+    def __str__(self):
         return self.name
+
+
+class WorkoutSet(models.Model):
+    workout = models.ForeignKey(Workout, on_delete=models.CASCADE, related_name='workout_sets')
+    exercise = models.ManyToManyField(Exercise,)
+    weight = models.DecimalField(max_digits=10, decimal_places=2)
+    reps = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        return self.exercise.all().first().name
+    

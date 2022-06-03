@@ -10,6 +10,7 @@ import 'MainScreens/dashboard.dart';
 import 'MainScreens/analysis.dart';
 
 class Home extends StatefulWidget {
+  // User is passed into class. Is available to entire class
   final User user;
 
   Home({this.user});
@@ -20,7 +21,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  int _selectedItemIndex = 1;
+  int _selectedItemIndex = 0;
   PageController _pageController = new PageController();
 
   @override
@@ -55,10 +56,10 @@ class _HomeState extends State<Home> {
             ? BoxDecoration(
                 border: BorderDirectional(
                     top: BorderSide(
-                  width: 5.0,
+                  width: 7.0,
                   color: index == _selectedItemIndex
                       ? Theme.of(context).primaryColor
-                      : Colors.transparent,
+                      : Color.fromARGB(0, 255, 255, 255),
                 )),
               )
             : BoxDecoration(color: Colors.transparent),
@@ -71,15 +72,6 @@ class _HomeState extends State<Home> {
                   : Colors.grey,
               size: 28.0,
             ),
-            Container(
-              child: Text(
-                title,
-                style: TextStyle(
-                    color: index == _selectedItemIndex
-                        ? Theme.of(context).primaryColor
-                        : Colors.yellow),
-              ),
-            )
           ],
         ),
       ),
@@ -91,24 +83,26 @@ class _HomeState extends State<Home> {
     final authBloc = BlocProvider.of<AuthenticationBloc>(context);
     return Scaffold(
         key: _scaffoldKey,
-        backgroundColor: Theme.of(context).accentColor,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         appBar: AppBar(
-          title: Text(
-            _pageTitles[_selectedItemIndex],
-            style: TextStyle(
-                color: Theme.of(context).primaryColor,
-                textBaseline: TextBaseline.alphabetic),
+          title: Center(
+            child: Text(
+              _pageTitles[_selectedItemIndex],
+              style: TextStyle(
+                  color: Colors.grey, textBaseline: TextBaseline.alphabetic),
+            ),
           ),
-          backgroundColor: Colors.transparent,
-          elevation: 0.0,
+          backgroundColor: Colors.grey[700],
+          elevation: 1.0,
           leading: IconButton(
               icon: Icon(Icons.menu),
-              color: Theme.of(context).primaryColor,
+              color: Colors.grey,
               onPressed: () {
                 _scaffoldKey.currentState.openDrawer();
               }),
         ),
         drawer: Drawer(
+          backgroundColor: Colors.grey[800],
           child: ListView(
             children: <Widget>[
               DrawerHeader(child: Text('Name, name')),
@@ -162,11 +156,9 @@ class SettingsTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 0.0),
       child: Container(
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: Colors.grey[300])),
-        ),
+        decoration: BoxDecoration(),
         child: InkWell(
-          splashColor: Colors.grey[300],
+          splashColor: Color.fromARGB(255, 7, 7, 7),
           onTap: onTap,
           child: Container(
             height: 50.0,
@@ -177,20 +169,20 @@ class SettingsTile extends StatelessWidget {
                   children: [
                     Icon(
                       icon,
-                      color: Theme.of(context).primaryColor,
+                      color: Colors.grey,
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
                       child: Text(
                         title,
-                        style: menuText(Theme.of(context).primaryColor, 16.0),
+                        style: menuText(Colors.grey, 18.0),
                       ),
                     ),
                   ],
                 ),
                 Icon(
                   Icons.arrow_right,
-                  color: Theme.of(context).primaryColor,
+                  color: Colors.grey,
                 ),
               ],
             ),

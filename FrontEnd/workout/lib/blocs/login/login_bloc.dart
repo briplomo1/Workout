@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:workout/blocs/authentication/authentication_bloc.dart';
 import 'package:workout/blocs/authentication/authentication_event.dart';
@@ -40,8 +42,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       }
     } on InvalidUsernamePassword catch (e) {
       yield LoginFailure(error: e.message);
-    } catch (err) {
-      yield LoginFailure(error: err ?? 'An unknown error ocurred');
+    } on SocketException catch (e) {
+      yield LoginFailure(error: e.message ?? 'An unknown error ocurred');
+    } catch (e) {
+      yield LoginFailure(error: e ?? 'An unknown error ocurred');
     }
   }
 }

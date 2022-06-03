@@ -4,9 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-djangorestframework = "*"
-djangorestframework-simplejwt = "*"
-django-rest-auth = "*"
+djangorestframework = "3.13.1"
+djangorestframework-simplejwt = "5.1.0"
+django-rest-auth = "0.9.5"
 
 [dev-packages]
 
