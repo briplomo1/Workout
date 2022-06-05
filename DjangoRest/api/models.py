@@ -1,4 +1,4 @@
-from tkinter import CASCADE
+from django.db.models.deletion import CASCADE
 from unicodedata import name
 from django.db import models
 from django.contrib.auth.models import AbstractUser

@@ -1,4 +1,4 @@
-.env
+
 # Visual Studio Code # 
 .vscode/* 
 !.vscode/settings.json 
@@ -11,7 +11,7 @@ sftp-config.json
 # mypy 
 .mypy_cache/ 
 # Environments 
-.env 
+
 .venv 
 env/ 
 venv/ 

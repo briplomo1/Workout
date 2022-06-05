@@ -9,6 +9,11 @@ djangorestframework-simplejwt = "5.1.0"
 django-rest-auth = "0.9.5"
 django = "*"
 django-environ = "*"
+django-filter = "*"
+gunicorn = "*"
+whitenoise = "*"
+django-heroku = "*"
+tk = "*"
 
 [dev-packages]
 
