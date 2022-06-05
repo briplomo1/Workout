@@ -11,7 +11,7 @@ import 'MainScreens/analysis.dart';
 
 class Home extends StatefulWidget {
   // User is passed into class. Is available to entire class
-  final User user;
+  final User? user;
 
   Home({this.user});
 
@@ -98,7 +98,7 @@ class _HomeState extends State<Home> {
               icon: Icon(Icons.menu),
               color: Colors.grey,
               onPressed: () {
-                _scaffoldKey.currentState.openDrawer();
+                _scaffoldKey.currentState!.openDrawer();
               }),
         ),
         drawer: Drawer(
@@ -147,9 +147,9 @@ class _HomeState extends State<Home> {
 }
 
 class SettingsTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final Function onTap;
+  final IconData? icon;
+  final String? title;
+  final Function? onTap;
 
   const SettingsTile({this.icon, this.title, this.onTap});
   Widget build(BuildContext context) {
@@ -159,7 +159,7 @@ class SettingsTile extends StatelessWidget {
         decoration: BoxDecoration(),
         child: InkWell(
           splashColor: Color.fromARGB(255, 7, 7, 7),
-          onTap: onTap,
+          onTap: onTap as void Function()?,
           child: Container(
             height: 50.0,
             child: Row(
@@ -174,7 +174,7 @@ class SettingsTile extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
                       child: Text(
-                        title,
+                        title!,
                         style: menuText(Colors.grey, 18.0),
                       ),
                     ),

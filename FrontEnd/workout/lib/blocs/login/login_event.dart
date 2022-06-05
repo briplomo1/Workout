@@ -4,14 +4,14 @@ import 'package:workout/models/models.dart';
 
 abstract class LoginEvent extends Equatable {
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class LoginButtonPressed extends LoginEvent {
-  final LoginRequest user;
+  final LoginRequest? user;
 
-  LoginButtonPressed({@required this.user});
+  LoginButtonPressed({required this.user});
 
   @override
-  List<Object> get props => [user];
+  List<Object?> get props => [user];
 }

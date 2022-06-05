@@ -11,7 +11,7 @@ class ExerciseSerializer(serializers.ModelSerializer):
 
 
 class WorkoutSetSerializer(serializers.HyperlinkedModelSerializer):
-    exercise = ExerciseSerializer(read_only=True)
+    exercise = ExerciseSerializer(read_only=True, many=True)
     class Meta:
         model = WorkoutSet
         fields = ['exercise', 'reps', 'weight',]
@@ -19,7 +19,7 @@ class WorkoutSetSerializer(serializers.HyperlinkedModelSerializer):
 
 class WorkoutSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.HyperlinkedRelatedField(view_name='user-detail',read_only=True)
-    workout_sets = WorkoutSetSerializer(required=False)
+    workout_sets = WorkoutSetSerializer(required=False, many=True, read_only=True)
     class Meta:
         model = Workout
         fields = ['owner', 'name', 'date_created', 'workout_sets']
@@ -35,7 +35,7 @@ class WorkoutSerializer(serializers.HyperlinkedModelSerializer):
 
 class SetSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.HyperlinkedRelatedField(view_name='user-detail', read_only=True,)
-    exercise = ExerciseSerializer(read_only=True)
+    exercise = ExerciseSerializer(read_only=True, many=True)
     class Meta:
         model = Set
         fields = ['url', 'owner', 'date', 'reps', 'weight', 'exercise']

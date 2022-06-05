@@ -12,18 +12,18 @@ final _setsURL = _baseURL + 'sets/';
 final _loginURL = _baseURL + 'token/';
 final _refreshURL = _loginURL + 'refresh/';
 
-String accessToken;
+String? accessToken;
 
 StorageService storage = new StorageService();
 
 class AuthenticationService {
   AuthenticationService();
 
-  Future<User> userLogin(LoginRequest user) async {
+  Future<User?> userLogin(LoginRequest? user) async {
     print("Logging in at: " + _loginURL);
 
     //http request to login with suppliewd user credentials
-    var response = await http.post(_loginURL,
+    var response = await http.post(Uri.parse(_loginURL),
         headers: <String, String>{
           "Content-Type": "application/json",
           "Accept": "application/json"
@@ -31,7 +31,7 @@ class AuthenticationService {
         body: jsonEncode(user));
 
     LoginResponse res = LoginResponse.fromJson(json.decode(response.body));
-    User useR;
+    User? useR;
     // if request  is bad set state to unauthenticated
     if (response.statusCode == 401) {
       print("invalid credentials");
@@ -40,7 +40,7 @@ class AuthenticationService {
     } else if (response.statusCode < 200 ||
         response.statusCode > 400 ||
         response == null) {
-      print('Error: ' + res.error);
+      print('Error: ' + res.error!);
       useR = null;
     }
     // If token is valid = save refresh token and set access token variable
@@ -60,7 +60,7 @@ class AuthenticationService {
 
   Future<int> attemptSignUp(String email, String password) async {
     try {
-      final http.Response response = await http.post(_usersURL,
+      final http.Response response = await http.post(Uri.parse(_usersURL),
           headers: <String, String>{
             "Content-Type": "application/json",
             "Accept": "application/json"
@@ -69,9 +69,10 @@ class AuthenticationService {
             "email": email,
             "password": password
           });
-      return response?.statusCode;
+      return response.statusCode;
     } on Exception catch (e) {
       print("error signing up: $e");
+      return 404;
     }
   }
 
@@ -81,13 +82,13 @@ class AuthenticationService {
   ///check refresh token
   ///if invalid return to login screen
   ///
-  Future<User> getUser() async {
+  Future<User?> getUser() async {
     if (accessToken == null) {
       print("acces token is null");
       return null;
     }
     print("getting user with token: $accessToken at $_usersURL");
-    final parts = accessToken.split('.');
+    final parts = accessToken!.split('.');
     if (parts.length != 3) {
       print("invalid access token");
       return null;
@@ -102,7 +103,7 @@ class AuthenticationService {
     }
     print(jsonPayload['user_id']);
     final http.Response res = await http.get(
-      _usersURL + jsonPayload['user_id'].toString(),
+      Uri.parse(_usersURL + jsonPayload['user_id'].toString()),
       headers: <String, String>{
         "Content-Type": "application/json",
         "Accept": "application/json",
@@ -111,13 +112,13 @@ class AuthenticationService {
     );
     print("Json body: ");
     print(json.decode(res.body));
-    User user = User.fromJson(json.decode(res.body));
+    User? user = User.fromJson(json.decode(res.body));
     //If access token is invalid makes a request
     // for new access token with refresh token
     //
-    if (user.detail != '') {
+    if (user?.detail != '') {
       print("User detail: ");
-      print(user.detail);
+      print(user?.detail);
       bool tokenIsValid = await getRefreshToken();
       if (!tokenIsValid) {
         return null;
@@ -128,7 +129,7 @@ class AuthenticationService {
       }
     }
     print("returning user to authetication bloc");
-    print(user.firstName);
+    print(user?.firstName);
     return user;
   }
 
@@ -147,7 +148,7 @@ class AuthenticationService {
     }
     print(refreshToken);
     final msg = jsonEncode({"refresh": "$refreshToken"});
-    final http.Response res = await http.post(_refreshURL,
+    final http.Response res = await http.post(Uri.parse(_refreshURL),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",

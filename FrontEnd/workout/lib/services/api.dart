@@ -9,47 +9,50 @@ final _usersURL = _baseURL + 'users/';
 final _setsURL = _baseURL + 'sets/';
 final _loginURL = _baseURL + 'token/';
 
-String currentToken;
+String? currentToken;
 
 class APIService {
 // Authenticate with usernbame and password and get tokens
   Future<void> userLogin(LoginRequest user) async {
     print("Logging in at: " + _loginURL);
     // Sets state to is authenticating while making http request
-    // _controller.add(AuthenticationStatus.isAuthenticating);
+    //_controller.add(AuthenticationStatus.isAuthenticating);
     //http request to login with suppliewd user credentials
-    final http.Response response = await http.post(_loginURL,
+    final http.Response? response = await http.post(Uri.parse(_loginURL),
         headers: <String, String>{
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
         body: jsonEncode(user));
+    LoginResponse res;
 
-    LoginResponse res = LoginResponse.fromJson(json.decode(response.body));
-    // if request  is bad set state to unauthenticated
-    if (response.statusCode < 200 ||
-        response.statusCode > 400 ||
-        response == null) {
-      // _controller.add(AuthenticationStatus.unauthenticated);
-      print('Error: ' + res.error);
+    if (response == null) {
+      print("response recieved was null");
     } else {
-      // if a token is given save refresh token and set status to authenticated
-      if (res.refreshToken != '') {
-        currentToken = res.accessToken;
-        // await storage.saveToken(res.refreshToken);
-        // _controller.add(AuthenticationStatus.authenticated);
-        print("token saved in storage");
+      res = LoginResponse.fromJson(json.decode(response.body));
+      // if request  is bad set state to unauthenticated
+      if (response.statusCode < 200 || response.statusCode > 400) {
+        //_controller.add(AuthenticationStatus.unauthenticated);
+        print('Error: ' + res.error!);
       } else {
-        //if no token is given set state to unauthenticated
-        // _controller.add(AuthenticationStatus.unauthenticated);
-        print("No token recieved");
+        // if a token is given save refresh token and set status to authenticated
+        if (res.refreshToken != '') {
+          currentToken = res.accessToken;
+          //await storage.saveToken(res.refreshToken);
+          //_controller.add(AuthenticationStatus.authenticated);
+          print("token saved in storage");
+        } else {
+          //if no token is given set state to unauthenticated
+          //_controller.add(AuthenticationStatus.unauthenticated);
+          print("No token recieved");
+        }
       }
+      print(json.decode(response.body));
     }
-    print(json.decode(response.body));
   }
 
-  Future<User> getUser() async {
-    final parts = currentToken.split('.');
+  Future<User?> getUser() async {
+    final parts = currentToken!.split('.');
     if (parts.length != 3) {
       throw Exception("Invalid access token");
     }
@@ -62,7 +65,7 @@ class APIService {
       return null;
     }
     final http.Response res = await http.get(
-      _usersURL + jsonPayload['user_id'],
+      Uri.parse(_usersURL + jsonPayload['user_id']),
       headers: <String, String>{
         "Content-Type": "application/json",
         "Accept": "application/json",
@@ -70,7 +73,7 @@ class APIService {
       },
     );
 
-    User user = User.fromJson(json.decode(res.body));
+    User? user = User.fromJson(json.decode(res.body));
     return user;
   }
 }

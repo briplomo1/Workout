@@ -6,23 +6,23 @@ abstract class AuthenticationEvent extends Equatable {
   const AuthenticationEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 //When app is launched
 class AppLoaded extends AuthenticationEvent {
-  final bool isvalidToken;
+  final bool? isvalidToken;
   AppLoaded({this.isvalidToken});
 
   @override
-  List<Object> get props => [isvalidToken];
+  List<Object?> get props => [isvalidToken];
 }
 
 //When user has logged in
 class UserLoggedIn extends AuthenticationEvent {
   final User user;
 
-  UserLoggedIn({@required this.user});
+  UserLoggedIn({required this.user});
 
   @override
   List<Object> get props => [user];

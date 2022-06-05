@@ -89,14 +89,13 @@ class __SignInFormState extends State<_SignInForm> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey<FormState> globalFormKey = new GlobalKey<FormState>();
   bool hidePassword = true;
-  LoginRequest loginModel;
-  AuthenticationService auth;
-  StorageService storage;
+  LoginRequest loginModel = new LoginRequest();
+  AuthenticationService? auth;
+  StorageService? storage;
 
   @override
   void initState() {
     super.initState();
-    loginModel = new LoginRequest();
   }
 
   @override
@@ -149,9 +148,10 @@ class __SignInFormState extends State<_SignInForm> {
                                 child: Container(
                               margin: EdgeInsets.only(left: 4, right: 20),
                               child: TextFormField(
-                                onSaved: (input) => loginModel.email = input,
+                                onSaved: (input) =>
+                                    loginModel.email = input ?? '',
                                 keyboardType: TextInputType.emailAddress,
-                                validator: (input) => input.contains("@")
+                                validator: (input) => input!.contains("@")
                                     ? null
                                     : "Invalid email address",
                                 decoration: InputDecoration(
@@ -179,8 +179,9 @@ class __SignInFormState extends State<_SignInForm> {
                               margin: EdgeInsets.only(left: 4, right: 20),
                               child: TextFormField(
                                 keyboardType: TextInputType.emailAddress,
-                                onSaved: (input) => loginModel.password = input,
-                                validator: (input) => input.length < 8
+                                onSaved: (input) =>
+                                    loginModel.password = input ?? '',
+                                validator: (input) => input!.length < 8
                                     ? "Invalid password length"
                                     : null,
                                 obscureText: hidePassword,
@@ -214,7 +215,7 @@ class __SignInFormState extends State<_SignInForm> {
                           width: double.infinity,
                           decoration: BoxDecoration(boxShadow: [
                             BoxShadow(
-                                color: Colors.grey[350],
+                                color: Colors.grey[350]!,
                                 spreadRadius: 5,
                                 blurRadius: 7,
                                 offset: Offset(0, 7))
@@ -269,7 +270,7 @@ class __SignInFormState extends State<_SignInForm> {
   }
 
   bool validateAndSaveLoginForm() {
-    final loginForm = globalFormKey.currentState;
+    final loginForm = globalFormKey.currentState!;
     if (loginForm.validate()) {
       loginForm.save();
       return true;

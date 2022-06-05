@@ -38,12 +38,12 @@ class Service {
 
 class StorageService {
   Future<String> getToken() async {
-    String token = await _storage.read(key: "token");
+    String? token = await _storage.read(key: "token");
     return token ?? '';
   }
 // Method saves token to local storage
 
-  Future<void> saveToken(String token) async {
+  Future<void> saveToken(String? token) async {
     await _storage.write(key: "token", value: token);
   }
 

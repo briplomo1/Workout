@@ -12,40 +12,49 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthenticationBloc _authenticationBloc;
   final AuthenticationService _authenticationService;
 
-  LoginBloc(AuthenticationBloc authenticationBloc,
-      AuthenticationService authenticationService)
+  LoginBloc(AuthenticationBloc? authenticationBloc,
+      AuthenticationService? authenticationService)
       : assert(authenticationBloc != null),
         assert(authenticationService != null),
-        _authenticationBloc = authenticationBloc,
-        _authenticationService = authenticationService,
-        super(LoginInitial());
-
-  @override
-  Stream<LoginState> mapEventToState(LoginEvent event) async* {
-    if (event is LoginButtonPressed) {
-      yield* _mapLoginButtonPressedToState(event);
-    }
+        _authenticationBloc = authenticationBloc!,
+        _authenticationService = authenticationService!,
+        super(LoginInitial()) {
+    on<LoginButtonPressed>(_mapLoginButtonPressedToState);
   }
 
-  Stream<LoginState> _mapLoginButtonPressedToState(
-      LoginButtonPressed event) async* {
-    yield LoginLoading();
+  // @override
+  // Stream<LoginState> mapEventToState(LoginEvent event) async* {
+  //   if (event is LoginButtonPressed) {
+  //     yield* _mapLoginButtonPressedToState(event);
+  //   }
+  // }
+  // Stream<LoginState> _mapLoginButtonPressedToState(
+  //     LoginButtonPressed event) async* {
+
+  Future<void> _mapLoginButtonPressedToState(
+      LoginButtonPressed event, Emitter<LoginState> emit) async {
+    print("Trying login user await");
+    try {
+      emit(LoginLoading());
+    } catch (e) {
+      emit(LoginFailure(error: e.toString()));
+    }
     try {
       final user = await _authenticationService.userLogin(event.user);
       if (user != null) {
         print("User logged in...");
         _authenticationBloc.add(UserLoggedIn(user: user));
-        yield LoginSuccess();
-        yield LoginInitial();
+        emit(LoginSuccess());
+        emit(LoginInitial());
       } else {
-        yield LoginFailure(error: "Could not get user");
+        emit(LoginFailure(error: "Could not get user. User null..."));
       }
     } on InvalidUsernamePassword catch (e) {
-      yield LoginFailure(error: e.message);
+      emit(LoginFailure(error: e.message));
     } on SocketException catch (e) {
-      yield LoginFailure(error: e.message ?? 'An unknown error ocurred');
+      emit(LoginFailure(error: e.message));
     } catch (e) {
-      yield LoginFailure(error: e ?? 'An unknown error ocurred');
+      emit(LoginFailure(error: 'An unknown error ocurred'));
     }
   }
 }

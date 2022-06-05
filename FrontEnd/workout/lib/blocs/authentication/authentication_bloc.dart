@@ -8,55 +8,59 @@ class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
   final AuthenticationService _authenticationService;
 
-  AuthenticationBloc(AuthenticationService authenticationService)
+  AuthenticationBloc(AuthenticationService? authenticationService)
       : assert(authenticationService != null),
-        _authenticationService = authenticationService,
-        super(AuthenticationInitial());
-
-  @override
-  Stream<AuthenticationState> mapEventToState(
-      AuthenticationEvent event) async* {
-    if (event is AppLoaded) {
-      yield* _mapAppLoadedToState(event);
-    }
-
-    if (event is UserLoggedIn) {
-      yield* _mapUserLoggedInToState(event);
-    }
-    if (event is UserLoggedOut) {
-      yield* _mapUserLoggedOutToState(event);
-    }
+        _authenticationService = authenticationService!,
+        super(AuthenticationInitial()) {
+    on<AppLoaded>(_mapAppLoadedToState);
+    on<UserLoggedIn>(_mapUserLoggedInToState);
+    on<UserLoggedOut>(_mapUserLoggedOutToState);
   }
 
-  Stream<AuthenticationState> _mapAppLoadedToState(AppLoaded event) async* {
+  // @override
+  // Stream<AuthenticationState> mapEventToState(
+  //     AuthenticationEvent event) async* {
+  //   if (event is AppLoaded) {
+  //     yield* _mapAppLoadedToState(event);
+  //   }
+
+  //   if (event is UserLoggedIn) {
+  //     yield* _mapUserLoggedInToState(event);
+  //   }
+  //   if (event is UserLoggedOut) {
+  //     yield* _mapUserLoggedOutToState(event);
+  //   }
+  // }
+
+  Future<void> _mapAppLoadedToState(
+      AppLoaded event, Emitter<AuthenticationState> emit) async {
     print("Determining auth state");
-    yield AuthenticationLoading();
+    emit(AuthenticationLoading());
     try {
-      User currentUser;
+      User? currentUser;
       if (await _authenticationService.getRefreshToken()) {
         currentUser = await _authenticationService.getUser();
       }
       if (currentUser != null) {
-        yield AuthenticationAuthenticated(user: currentUser);
+        emit(AuthenticationAuthenticated(user: currentUser));
         print("Yielding authenticated");
       } else {
         print("yielding not authenticated");
-        yield AuthenticationNotAuthenticated();
+        emit(AuthenticationNotAuthenticated());
       }
     } catch (e) {
-      yield AuthenticationFailure(
-          message: e.toString() ?? 'An unknown error occured');
+      emit(AuthenticationFailure(message: e.toString()));
     }
   }
 
-  Stream<AuthenticationState> _mapUserLoggedInToState(
-      UserLoggedIn event) async* {
-    yield AuthenticationAuthenticated(user: event.user);
+  Future<void> _mapUserLoggedInToState(
+      UserLoggedIn event, Emitter<AuthenticationState> emit) async {
+    emit(AuthenticationAuthenticated(user: event.user));
   }
 
-  Stream<AuthenticationState> _mapUserLoggedOutToState(
-      UserLoggedOut event) async* {
+  Future<void> _mapUserLoggedOutToState(
+      UserLoggedOut event, Emitter<AuthenticationState> emit) async {
     await _authenticationService.logoutUser();
-    yield AuthenticationNotAuthenticated();
+    emit(AuthenticationNotAuthenticated());
   }
 }
