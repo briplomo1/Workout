@@ -6,7 +6,8 @@ import 'package:workout/models/models.dart';
 import 'package:workout/services/api.dart';
 import 'package:workout/services/services.dart';
 
-final _baseURL = 'http://10.0.2.2:8000/api/';
+//final _baseURL = 'http://10.0.2.2:8000/api/';
+final _baseURL = 'https://bp-workout.herokuapp.com/api/';
 final _usersURL = _baseURL + 'users/';
 final _setsURL = _baseURL + 'sets/';
 final _loginURL = _baseURL + 'token/';
