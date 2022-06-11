@@ -40,7 +40,7 @@ class AuthenticationService {
           "Invalid username or password! Try again...");
     } else if (response.statusCode < 200 ||
         response.statusCode > 400 ||
-        response == null) {
+        response == '') {
       print('Error: ' + res.error!);
       useR = null;
     }
