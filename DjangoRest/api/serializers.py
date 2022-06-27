@@ -14,7 +14,7 @@ class WorkoutSetSerializer(serializers.HyperlinkedModelSerializer):
     exercise = ExerciseSerializer(read_only=True, many=True)
     class Meta:
         model = WorkoutSet
-        fields = ['exercise', 'reps', 'weight',]
+        fields = ['exercise', 'reps', 'weight', 'setNum',]
 
 
 class WorkoutSerializer(serializers.HyperlinkedModelSerializer):

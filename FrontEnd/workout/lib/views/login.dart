@@ -17,7 +17,6 @@ import 'package:workout/views/forgot_password.dart';
 import 'package:workout/services/api.dart';
 import 'package:workout/models/models.dart';
 import 'package:workout/views/home.dart';
-import 'dart:convert';
 import 'package:workout/constants.dart';
 
 import 'package:workout/views/register.dart';

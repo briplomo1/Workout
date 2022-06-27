@@ -52,6 +52,7 @@ class Workout(models.Model):
 
 
 class WorkoutSet(models.Model):
+    setNum = models.PositiveSmallIntegerField()
     workout = models.ForeignKey(Workout, on_delete=models.CASCADE, related_name='workout_sets')
     exercise = models.ManyToManyField(Exercise,)
     weight = models.DecimalField(max_digits=10, decimal_places=2)

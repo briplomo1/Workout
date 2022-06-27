@@ -11,9 +11,9 @@ import 'MainScreens/analysis.dart';
 
 class Home extends StatefulWidget {
   // User is passed into class. Is available to entire class
-  final User? user;
+  final User user;
 
-  Home({this.user});
+  Home({required this.user});
 
   @override
   _HomeState createState() => _HomeState();
@@ -23,21 +23,26 @@ class _HomeState extends State<Home> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedItemIndex = 0;
   PageController _pageController = new PageController();
-
+  late User user = widget.user;
   @override
   void initState() {
     super.initState();
   }
 
-  //Nav bar screens and Titles
-  List<Widget> _pageScreens = [
-    DashboardScreen(),
+  late List<Widget> _pageScreens = [
+    DashboardScreen(user: user),
     LogScreen(),
     AnalysisScreen()
   ];
+  //Nav bar screens and Titles
+
   List<String> _pageTitles = ["Dashboard", "Workout Log", "Analysis"];
 
-  void _onPageChanged(int index) {}
+  void _onPageChanged(int index) {
+    setState(() {
+      _selectedItemIndex = index;
+    });
+  }
 
   //Nav bar Item Widget
   GestureDetector buildNavBarItem(
@@ -83,26 +88,27 @@ class _HomeState extends State<Home> {
     final authBloc = BlocProvider.of<AuthenticationBloc>(context);
     return Scaffold(
         key: _scaffoldKey,
-        backgroundColor: Theme.of(context).colorScheme.secondary,
+        backgroundColor: Color.fromARGB(255, 15, 15, 15),
         appBar: AppBar(
-          title: Center(
-            child: Text(
-              _pageTitles[_selectedItemIndex],
-              style: TextStyle(
-                  color: Colors.grey, textBaseline: TextBaseline.alphabetic),
-            ),
+          centerTitle: true,
+          title: Text(
+            _pageTitles[_selectedItemIndex],
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: Colors.white, textBaseline: TextBaseline.ideographic),
           ),
-          backgroundColor: Colors.grey[700],
+          backgroundColor: Color.fromARGB(255, 15, 15, 15),
           elevation: 1.0,
           leading: IconButton(
               icon: Icon(Icons.menu),
-              color: Colors.grey,
+              color: Theme.of(context).primaryColor,
+              iconSize: 35,
               onPressed: () {
                 _scaffoldKey.currentState!.openDrawer();
               }),
         ),
         drawer: Drawer(
-          backgroundColor: Colors.grey[800],
+          backgroundColor: Colors.grey[900],
           child: ListView(
             children: <Widget>[
               DrawerHeader(child: Text('Name, name')),
@@ -134,7 +140,9 @@ class _HomeState extends State<Home> {
         body: PageView(
           controller: _pageController,
           children: _pageScreens,
-          onPageChanged: _onPageChanged,
+          onPageChanged: (newIndex) {
+            _onPageChanged(newIndex);
+          },
         ),
         bottomNavigationBar: Row(
           children: [

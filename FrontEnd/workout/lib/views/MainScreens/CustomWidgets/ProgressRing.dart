@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class ProgressRing extends CustomPainter {
-  final ringThickness = 20.0;
+  final ringThickness = 12.0;
   double ringProgress;
   double circleRadius = 200;
 
@@ -13,7 +13,7 @@ class ProgressRing extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     Paint circle = Paint()
       ..strokeWidth = ringThickness
-      ..color = Colors.blue
+      ..color = Colors.transparent
       ..style = PaintingStyle.stroke;
 
     Offset center = Offset(size.width / 2, size.height / 2);
@@ -22,7 +22,7 @@ class ProgressRing extends CustomPainter {
 
     Paint animationArc = Paint()
       ..strokeWidth = ringThickness
-      ..color = Colors.purple
+      ..color = Colors.blue[900]!
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 

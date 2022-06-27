@@ -8,6 +8,8 @@ import 'package:workout/views/forgot_password.dart';
 import 'views/login.dart';
 import 'views/home.dart';
 import 'views/register.dart';
+import 'constants.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(RepositoryProvider<AuthenticationService>(
@@ -28,13 +30,21 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-          scaffoldBackgroundColor: Colors.grey[200],
-          primaryColor: Color.fromARGB(255, 15, 174, 248),
-          colorScheme:
-              ColorScheme.fromSwatch().copyWith(secondary: Colors.grey[900])),
+        textTheme: TextTheme(
+            displayMedium: TextStyle(
+          color: Colors.white,
+        )),
+        scaffoldBackgroundColor: Colors.white,
+        primaryColor: Color.fromARGB(255, 57, 248, 255),
+        colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.white),
+      ),
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
           builder: (context, state) {
         if (state is AuthenticationAuthenticated) {

@@ -9,7 +9,7 @@
             "cwd": "FrontEnd\\workout",
             "request": "launch",
             "type": "dart",
-            "program":"lib/views/main.dart"
+            "program":"lib/main.dart"
         }
     ]
 }

@@ -4,11 +4,12 @@ import 'dart:async';
 import 'package:workout/models/models.dart';
 import 'package:workout/services/services.dart';
 
-final _baseURL = 'https://bp-workout.herokuapp.com/api/';
-//final _baseURL = 'http://10.0.2.2:8000/api/';
+//final _baseURL = 'https://bp-workout.herokuapp.com/api/';
+final _baseURL = 'http://10.0.2.2:8000/api/';
 final _usersURL = _baseURL + 'users/';
 final _setsURL = _baseURL + 'sets/';
 final _loginURL = _baseURL + 'token/';
+final _exercisesURL = _baseURL + 'exercises/';
 
 String? currentToken;
 
@@ -76,5 +77,32 @@ class APIService {
 
     User? user = User.fromJson(json.decode(res.body));
     return user;
+  }
+
+  Future<List<Exercise>> getExercises() async {
+    List<Exercise>? exercises;
+    final http.Response? response = await http.get(
+      Uri.parse(_exercisesURL),
+      headers: <String, String>{
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+    );
+
+    if (response == null) {
+      print("Response was null");
+      throw Exception('Get exercises response was null');
+    } else {
+      List<Map<String, String>> res = json.decode(response.body);
+      if (response.statusCode < 200 || response.statusCode > 400) {
+        print('Error: ' + response.statusCode.toString());
+        throw Exception('Error: ' + response.statusCode.toString());
+      } else {
+        res == []
+            ? exercises = []
+            : exercises = res.map((e) => Exercise.fromJson(e)).toList();
+        return exercises;
+      }
+    }
   }
 }
