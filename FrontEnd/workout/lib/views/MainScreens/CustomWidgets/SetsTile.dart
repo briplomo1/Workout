@@ -12,10 +12,10 @@ class Item extends StatefulWidget {
   final Function onDelete;
   final state = _ItemState();
   // Need to add functionality to take from prevoious values of set
-  WorkoutSet? set;
+  WorkoutSet? workoutSet;
   Item({
     Key? key,
-    this.set,
+    this.workoutSet,
     required this.onDelete,
   }) : super(key: key);
 
@@ -26,15 +26,34 @@ class Item extends StatefulWidget {
 
 class _ItemState extends State<Item> {
   GlobalKey<FormState> globalFormKey = new GlobalKey<FormState>();
-  WorkoutSet workoutSet = new WorkoutSet();
-
   /////////////////////////
   String? _exercise;
   bool expanded = true;
 
-  final _setsController = TextEditingController(text: '1');
-  final _weightController = TextEditingController(text: '0');
-  final _repsController = TextEditingController(text: '1');
+  late TextEditingController _setsController;
+  late TextEditingController _weightController;
+  late TextEditingController _repsController;
+
+  @override
+  void initState() {
+    super.initState();
+    //if workout set is supplied from existing set:
+    //Current set will take on the given set's values.
+    //Field controllers will be set to given values or will default.
+    _exercise = widget.workoutSet != null ? widget.workoutSet!.exercise : null;
+    _setsController = TextEditingController(
+        text: widget.workoutSet != null
+            ? widget.workoutSet!.sets.toString()
+            : '4');
+    _weightController = TextEditingController(
+        text: widget.workoutSet != null
+            ? widget.workoutSet!.weight.toString()
+            : '0');
+    _repsController = TextEditingController(
+        text: widget.workoutSet != null
+            ? widget.workoutSet!.reps.toString()
+            : '8');
+  }
 
   @override
   void dispose() {
@@ -131,7 +150,6 @@ class _ItemState extends State<Item> {
             Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: Container(
-                //decoration: getFormBoxDecor(),
                 child: Form(
                   key: globalFormKey,
                   child: Column(
@@ -148,10 +166,15 @@ class _ItemState extends State<Item> {
                                   borderSide: BorderSide(
                                       color: Colors.transparent, width: 2.0),
                                 ),
+                                validator: (val) {
+                                  val != null || val != ''
+                                      ? null
+                                      : 'Please select and exercise';
+                                },
                                 hintText: 'Exercise',
                                 value: _exercise,
                                 onSaved: (newValue) {
-                                  workoutSet.exercise = _exercise ?? '';
+                                  widget.workoutSet!.exercise = _exercise ?? '';
                                 },
                                 onChanged: (newValue) {
                                   setState(() {
@@ -180,7 +203,7 @@ class _ItemState extends State<Item> {
                             Expanded(
                                 child: TextFormField(
                               onSaved: (value) {
-                                workoutSet.sets = int.parse(value!);
+                                widget.workoutSet!.sets = int.parse(value!);
                               },
                               validator: ((value) => (value != null &&
                                       value.length >= 1 &&
@@ -210,13 +233,13 @@ class _ItemState extends State<Item> {
                             Expanded(
                                 child: TextFormField(
                               onSaved: (newValue) {
-                                workoutSet.weight = double.parse(newValue!);
+                                widget.workoutSet!.weight =
+                                    double.parse(newValue!);
                               },
-                              validator: (value) {
-                                value != null && value.length >= 1
-                                    ? null
-                                    : 'Input a weight';
-                              },
+                              validator: (value) =>
+                                  value != null && value.length >= 1
+                                      ? null
+                                      : 'Input a weight',
                               onChanged: (value) {
                                 setState(() {});
                               },
@@ -239,8 +262,8 @@ class _ItemState extends State<Item> {
                             ),
                             Expanded(
                                 child: TextFormField(
-                              onSaved: (newValue) =>
-                                  workoutSet.reps = int.parse(newValue!),
+                              onSaved: (newValue) => widget.workoutSet!.reps =
+                                  int.parse(newValue!),
                               validator: ((value) => (int.parse(value!) >= 1)
                                   ? null
                                   : 'Must contain at t least 1 rep'),

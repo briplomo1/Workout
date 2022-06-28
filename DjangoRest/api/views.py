@@ -30,6 +30,20 @@ class UserViewSet(viewsets.ModelViewSet):
         elif self.action == 'list' or self.action == 'destroy':
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
+
+class WorkoutSetsViewSet(viewsets.ModelViewSet):
+    serializer_class = WorkoutSetSerializer
+    queryset = WorkoutSet.objects.all()
+
+    def get_permissions(self):
+        permission_classes= []
+        if self.action == 'create':
+            permission_classes = [permissions.IsAuthenticated]
+        elif self.action in ['retrieve', 'update', 'partial-update', 'destroy']:
+            permission_classes = [IsUserOrAdmin]
+        elif self.action == 'list':
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
     
 
 class SetsViewSet(viewsets.ModelViewSet):
@@ -50,21 +64,6 @@ class SetsViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
-
-
-class WorkoutSetsViewSet(viewsets.ModelViewSet):
-    serializer_class = WorkoutSetSerializer
-    queryset = WorkoutSet.objects.all()
-
-    def get_permissions(self):
-        permission_classes= []
-        if self.action == 'create':
-            permission_classes = [permissions.IsAuthenticated]
-        elif self.action in ['retrieve', 'update', 'partial-update', 'destroy']:
-            permission_classes = [IsLoggedInUserOrAdminWS]
-        elif self.action == 'list':
-            permission_classes = [IsAdminUser]
-        return [permission() for permission in permission_classes]
 
 
 class WorkoutsViewSet(viewsets.ModelViewSet):

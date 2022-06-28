@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:workout/blocs/authentication/authentication_bloc.dart';
 import 'package:workout/blocs/authentication/authentication_event.dart';
 import 'package:workout/blocs/authentication/authentication_state.dart';
-import 'package:workout/services/authentication_service.dart';
+import 'package:workout/services/api.dart';
 import 'package:workout/views/forgot_password.dart';
 import 'views/login.dart';
 import 'views/home.dart';
@@ -12,14 +12,13 @@ import 'constants.dart';
 import 'package:flutter/services.dart';
 
 void main() {
-  runApp(RepositoryProvider<AuthenticationService>(
+  runApp(RepositoryProvider<APIService>(
     create: (context) {
-      return AuthenticationService();
+      return APIService();
     },
     child: BlocProvider<AuthenticationBloc>(
       create: (context) {
-        final authService =
-            RepositoryProvider.of<AuthenticationService>(context);
+        final authService = RepositoryProvider.of<APIService>(context);
         return AuthenticationBloc(authService)..add(AppLoaded());
       },
       child: MyApp(),

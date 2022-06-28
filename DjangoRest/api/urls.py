@@ -7,7 +7,7 @@ router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet, basename='user')
 router.register(r'sets', views.SetsViewSet, basename='set')
 router.register(r'workouts', views.WorkoutsViewSet, basename='workout')
-router.register(r'workout_sets', views.WorkoutSetsViewSet, basename = 'workout_Sets')
+router.register(r'workout_sets', views.WorkoutSetsViewSet, basename = 'workout_sets')
 router.register(r'exercises', views.ExerciseViewSet, basename='exercises')
 urlpatterns = [
     path('', include(router.urls)),

@@ -1,7 +1,4 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,12 +8,10 @@ import 'package:workout/blocs/authentication/authentication_state.dart';
 import 'package:workout/blocs/login/login_bloc.dart';
 import 'package:workout/blocs/login/login_event.dart';
 import 'package:workout/blocs/login/login_state.dart';
-import 'package:workout/services/authentication_service.dart';
 import 'package:workout/services/services.dart';
 import 'package:workout/views/forgot_password.dart';
 import 'package:workout/services/api.dart';
 import 'package:workout/models/models.dart';
-import 'package:workout/views/home.dart';
 import 'package:workout/constants.dart';
 
 import 'package:workout/views/register.dart';
@@ -67,7 +62,7 @@ class LoginUser extends StatelessWidget {
 class _AuthForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final authService = RepositoryProvider.of<AuthenticationService>(context);
+    final authService = RepositoryProvider.of<APIService>(context);
     final authBloc = BlocProvider.of<AuthenticationBloc>(context);
 
     return Container(
@@ -89,7 +84,7 @@ class __SignInFormState extends State<_SignInForm> {
   GlobalKey<FormState> globalFormKey = new GlobalKey<FormState>();
   bool hidePassword = true;
   LoginRequest loginModel = new LoginRequest();
-  AuthenticationService? auth;
+
   StorageService? storage;
 
   @override

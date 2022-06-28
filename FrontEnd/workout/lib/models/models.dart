@@ -39,7 +39,7 @@ class User {
 }
 
 class Set {
-  String? url;
+  //String? url;
   String? exercise;
   String? owner;
   int? reps;
@@ -47,7 +47,8 @@ class Set {
   DateTime? dateCreated;
 
   Set(
-      {this.url,
+      {
+      //this.url,
       this.exercise,
       this.owner,
       this.reps,
@@ -57,7 +58,7 @@ class Set {
   factory Set.fromJson(Map<String, dynamic> data) {
     double? weights = double.tryParse(data['weight']) ?? 0.0;
     return Set(
-      url: data['url'] ?? '',
+      //url: data['url'] ?? '',
       exercise: data['exercise'] ?? '',
       owner: data['owner'] ?? '',
       reps: data['reps'] ?? 0,
@@ -71,18 +72,19 @@ class Workout {
   String? url;
   String? name;
   DateTime? dateCreated;
-  List<WorkoutSet>? sets;
+  List<WorkoutSet> sets;
   // Implement tojson
   Workout({
     this.url,
     this.name,
     this.dateCreated,
-    this.sets,
+    required this.sets,
   });
   factory Workout.fromJson(Map<String, dynamic> data) {
     var list = data['workout_sets'] as List;
-    List<WorkoutSet> setsList =
-        list.map((e) => WorkoutSet.fromJson(e)).toList();
+    List<WorkoutSet> setsList = list.length > 0
+        ? list.map((e) => WorkoutSet.fromJson(e)).toList()
+        : <WorkoutSet>[];
     return Workout(
       url: data['url'] ?? '',
       name: data['name'] ?? '',
@@ -100,14 +102,15 @@ class Workout {
 
 class WorkoutSet {
   int? sets;
-  String? url;
+  //String? url;
   String? exercise;
   int? reps;
   double? weight;
   DateTime? dateCreated;
 
   WorkoutSet(
-      {this.url,
+      {
+      //this.url,
       this.exercise,
       this.reps,
       this.weight,
@@ -118,8 +121,8 @@ class WorkoutSet {
     double? weights = double.tryParse(data['weight']) ?? 0.0;
     return WorkoutSet(
       sets: data['sets'] ?? '',
-      url: data['url'] ?? '',
-      exercise: data['exercise'] ?? '',
+      //url: data['url'] ?? '',
+      exercise: data['exercise']['name'] ?? '',
       reps: data['reps'] ?? 0,
       weight: weights,
       dateCreated: DateTime.parse(data['date']),

@@ -1,14 +1,14 @@
 import 'package:bloc/bloc.dart';
 import 'package:workout/models/models.dart';
+import 'package:workout/services/api.dart';
 import 'authentication_event.dart';
 import 'authentication_state.dart';
-import 'package:workout/services/authentication_service.dart';
 
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
-  final AuthenticationService _authenticationService;
+  final APIService _authenticationService;
 
-  AuthenticationBloc(AuthenticationService? authenticationService)
+  AuthenticationBloc(APIService? authenticationService)
       : assert(authenticationService != null),
         _authenticationService = authenticationService!,
         super(AuthenticationInitial()) {
@@ -16,21 +16,6 @@ class AuthenticationBloc
     on<UserLoggedIn>(_mapUserLoggedInToState);
     on<UserLoggedOut>(_mapUserLoggedOutToState);
   }
-
-  // @override
-  // Stream<AuthenticationState> mapEventToState(
-  //     AuthenticationEvent event) async* {
-  //   if (event is AppLoaded) {
-  //     yield* _mapAppLoadedToState(event);
-  //   }
-
-  //   if (event is UserLoggedIn) {
-  //     yield* _mapUserLoggedInToState(event);
-  //   }
-  //   if (event is UserLoggedOut) {
-  //     yield* _mapUserLoggedOutToState(event);
-  //   }
-  // }
 
   Future<void> _mapAppLoadedToState(
       AppLoaded event, Emitter<AuthenticationState> emit) async {

@@ -10,19 +10,23 @@ class ExerciseSerializer(serializers.ModelSerializer):
         fields = ['name']
 
 
-class WorkoutSetSerializer(serializers.HyperlinkedModelSerializer):
-    exercise = ExerciseSerializer(read_only=True, many=True)
+class WorkoutSetSerializer(serializers.ModelSerializer):
+    #workout = serializers.HyperlinkedRelatedField( view_name='workout-detail', many=True, read_only=True)
+    #exercise = ExerciseSerializer(read_only=True, many=True)
+    
     class Meta:
+        
         model = WorkoutSet
-        fields = ['exercise', 'reps', 'weight', 'setNum',]
-
+        fields = ['id','exercise','workout','reps', 'weight', 'setNum',]
+ 
 
 class WorkoutSerializer(serializers.HyperlinkedModelSerializer):
-    owner = serializers.HyperlinkedRelatedField(view_name='user-detail',read_only=True)
-    workout_sets = WorkoutSetSerializer(required=False, many=True, read_only=True)
+    #owner = serializers.UserSerializers(read_only=True)
+    workout_sets = WorkoutSetSerializer(many=True, read_only = True)
     class Meta:
+        
         model = Workout
-        fields = ['owner', 'name', 'date_created', 'workout_sets']
+        fields = ['url','owner', 'name', 'date_created', 'workout_sets']
         read_only_fields = ['owner', 'date_created']
 
     def create(self, validated_data):
@@ -47,14 +51,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
             fields = ['dob']
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(required=False)
     sets = SetSerializer(many=True, required=False, read_only=True)
     workouts = WorkoutSerializer(many=True, required=False, read_only=True)
 
     class Meta:
         model = User
-        fields = ('url', 'email', 'first_name', 'last_name', 'password', 'profile', 'sets', 'workouts')
+        fields = ('id', 'email', 'first_name', 'last_name', 'password', 'profile', 'sets', 'workouts')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
