@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:workout/exceptions/exceptions.dart';
 import 'dart:async';
@@ -9,8 +10,11 @@ import 'package:workout/services/services.dart';
 final _baseURL = 'http://10.0.2.2:8000/api/';
 final _usersURL = _baseURL + 'users/';
 final _setsURL = _baseURL + 'sets/';
-final _loginURL = _baseURL + 'token/';
+final _workoutURL = _baseURL + 'workouts/';
+final _workoutSets = _baseURL + 'workout_sets/';
 final _exercisesURL = _baseURL + 'exercises/';
+//Auth endpoints
+final _loginURL = _baseURL + 'token/';
 final _refreshURL = _loginURL + 'refresh/';
 
 String? accessToken;
@@ -78,7 +82,6 @@ class APIService {
   ///check access token if invalid
   ///check refresh token
   ///if invalid return to login screen
-  ///
   Future<User?> getUser() async {
     if (accessToken == null) {
       print("acces token is null");
@@ -206,8 +209,33 @@ class APIService {
     return [];
   }
 
-  Future<void> createWorkout(Workout workout) async {}
-  Future<void> updateWorkout() async {}
+  Future<void> createWorkout(Workout newWorkout) async {
+    final http.Response response = await http.post(Uri.parse(_workoutURL),
+        headers: <String, String>{
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode(newWorkout.toJson()));
+
+    if (response.statusCode < 200 ||
+        response.statusCode > 400 ||
+        response == '') {
+      print("Error creating workout: ");
+      print(response.statusCode);
+    } else {
+      Map<String, dynamic> res = json.decode(response.body);
+      if (res['detail'] != '') {
+        print(res['detail']);
+      } else {
+        print("succeeded in creating workout");
+      }
+    }
+
+    //
+  }
+
+  Future<void> updateWorkout(String url, Workout updatedWorkout) async {}
 
   Future<List<Set>> getAllSets() async {
     return [];

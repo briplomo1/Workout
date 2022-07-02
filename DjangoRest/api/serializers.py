@@ -37,8 +37,8 @@ class WorkoutSerializer(serializers.HyperlinkedModelSerializer):
         return workout_instance
 
 
-class SetSerializer(serializers.HyperlinkedModelSerializer):
-    owner = serializers.HyperlinkedRelatedField(view_name='user-detail', read_only=True,)
+class SetSerializer(serializers.ModelSerializer):
+    #owner = serializers.HyperlinkedRelatedField(view_name='user-detail', read_only=True,)
     exercise = ExerciseSerializer(read_only=True, many=True)
     class Meta:
         model = Set

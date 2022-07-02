@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 class User {
-  String? url;
+  int? id;
   String? firstName;
   String? lastName;
   String? email;
@@ -9,7 +9,7 @@ class User {
   String? detail;
 
   User(
-      {this.url,
+      {this.id,
       this.firstName,
       this.lastName,
       this.email,
@@ -23,7 +23,7 @@ class User {
       List<Set> setsList = list.map((e) => Set.fromJson(e)).toList();
       return User(
           detail: data['detail'] ?? '',
-          url: data['url'] ?? "",
+          id: data['id'] ?? "",
           email: data['email'] ?? "",
           firstName: data['first_name'] ?? "",
           lastName: data['last_name'] ?? "",
@@ -39,7 +39,7 @@ class User {
 }
 
 class Set {
-  //String? url;
+  int? id;
   String? exercise;
   String? owner;
   int? reps;
@@ -47,8 +47,7 @@ class Set {
   DateTime? dateCreated;
 
   Set(
-      {
-      //this.url,
+      {this.id,
       this.exercise,
       this.owner,
       this.reps,
@@ -58,7 +57,7 @@ class Set {
   factory Set.fromJson(Map<String, dynamic> data) {
     double? weights = double.tryParse(data['weight']) ?? 0.0;
     return Set(
-      //url: data['url'] ?? '',
+      id: data['id'] ?? '',
       exercise: data['exercise'] ?? '',
       owner: data['owner'] ?? '',
       reps: data['reps'] ?? 0,
@@ -102,15 +101,14 @@ class Workout {
 
 class WorkoutSet {
   int? sets;
-  //String? url;
+  int? id;
   String? exercise;
   int? reps;
   double? weight;
   DateTime? dateCreated;
 
   WorkoutSet(
-      {
-      //this.url,
+      {this.id,
       this.exercise,
       this.reps,
       this.weight,
@@ -121,7 +119,7 @@ class WorkoutSet {
     double? weights = double.tryParse(data['weight']) ?? 0.0;
     return WorkoutSet(
       sets: data['sets'] ?? '',
-      //url: data['url'] ?? '',
+      id: data['id'] ?? '',
       exercise: data['exercise']['name'] ?? '',
       reps: data['reps'] ?? 0,
       weight: weights,

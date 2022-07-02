@@ -35,7 +35,7 @@ class DropDownFormField extends FormField<dynamic> {
       : super(
           onSaved: onSaved,
           validator: validator,
-          autovalidateMode: autovalidate,
+          autovalidateMode: AutovalidateMode.always,
           initialValue: value == '' ? null : value,
           builder: (FormFieldState<dynamic> state) {
             return Container(
@@ -67,7 +67,6 @@ class DropDownFormField extends FormField<dynamic> {
                           onChanged!(newValue);
                         },
                         items: dataSource!.map((item) {
-                          print(item);
                           return DropdownMenuItem<dynamic>(
                             value: item,
                             child: Text(

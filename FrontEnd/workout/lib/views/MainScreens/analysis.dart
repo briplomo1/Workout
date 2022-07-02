@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:workout/services/api.dart';
 import 'package:workout/views/MainScreens/CustomWidgets/AddExerciseButton.dart';
 
 import '../../constants.dart';
@@ -13,7 +14,7 @@ class AnalysisScreen extends StatefulWidget {
 
 ///////////////////////////
 class _AnalysisScreenState extends State<AnalysisScreen> {
-  final scaffoldKey = GlobalKey<ScaffoldState>();
+  final ex = new Workout(name: "hello", sets: []);
 
   @override
   Widget build(BuildContext context) {
@@ -26,42 +27,70 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 class CreateWorkoutForm extends StatefulWidget {
   Workout? workout;
 
-  CreateWorkoutForm({Key? key, this.workout}) : super(key: key);
+  CreateWorkoutForm({this.workout});
 
   @override
   State<CreateWorkoutForm> createState() => _CreateWorkoutFormState();
 }
 
 class _CreateWorkoutFormState extends State<CreateWorkoutForm> {
+  //Api instance to create or update workout
+  APIService api = new APIService();
   //Id parameter to be used to make put request if a existing workout is given
-  //If remains null will make POST call if ID given will make PUT call
-  int? workoutID;
+  //If remains null will make POST call if ID URL given will make PUT call
+  String? workoutURI;
   //List of class Item plus addSetButton to populate list view
-  List<Widget> _ItemsList = [];
+  List<Item> _ItemsList = [];
+  //List of global keys used to manage state of multiple set forms
+  List<GlobalKey<ItemState>> _keyList = [];
   //This list will be populated by existing sets when editing existing workout
   //otherwise will be empty
-  late List<WorkoutSet> _setsList;
+  List<WorkoutSet> _setsList = [];
+  //Map of tiles' expansion states
+  List<bool> _expansionStates = [];
   //Controller for workout name
-  late TextEditingController _workoutNameController;
+  late var _workoutNameController;
+
   GlobalKey<FormState> globalFormKey = new GlobalKey<FormState>();
   @override
   void initState() {
     super.initState();
-    //workoutID = widget.workout != null ? widget.
+    //if there is an existing workout we are editing: populates lists of sets
+    //with exisitng sets in workout otherwise returns empty list
+    widget.workout =
+        widget.workout == null ? new Workout(sets: _setsList) : widget.workout!;
+    widget.workout!.sets =
+        widget.workout != null ? widget.workout!.sets : <WorkoutSet>[];
+    for (int i = 0; i < _setsList.length; i++) {
+      _expansionStates.add(true);
+      _keyList.add(new GlobalKey<ItemState>());
+      print(_keyList.length);
+      // _ItemsList.add(Item(
+      //   itemIndex: i,
+      //   onDelete: onDelete,
+      //   onExpanded: onExpanded,
+      //   key: _keyList[i],
+      //   workoutSet: _setsList[i],
+      //   expanded: _expansionStates[i],
+      // ));
+    }
+
     _workoutNameController = TextEditingController(
-        text: widget.workout != null ? widget.workout!.name : '');
-    _setsList = widget.workout != null ? widget.workout!.sets : <WorkoutSet>[];
+        text: widget.workout!.name != null ? widget.workout!.name : '');
   }
 
   @override
   Widget build(BuildContext context) {
-    for (int index = 0; index < _setsList.length; index++) {
-      // For every workoutSet creates a Item widget
+    print("Form built>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    _ItemsList.clear();
+    for (int i = 0; i < _setsList.length; i++) {
+      print(_expansionStates[i]);
       _ItemsList.add(Item(
-        key: globalFormKey,
-        onDelete: () => onDelete(index),
-        workoutSet: _setsList[index],
-      ));
+          itemIndex: i,
+          onDelete: onDelete,
+          onExpanded: onExpanded,
+          expanded: _expansionStates[i],
+          key: _keyList[i]));
     }
 
     return Padding(
@@ -78,11 +107,15 @@ class _CreateWorkoutFormState extends State<CreateWorkoutForm> {
                     padding: EdgeInsets.fromLTRB(10, 8, 10, 8),
                     child: TextFormField(
                       controller: _workoutNameController,
-                      validator: (val) => val != null || val != ''
-                          ? null
-                          : 'Enter a name for your workout',
-                      onSaved: (newValue) {
-                        widget.workout!.name = newValue;
+                      validator: (val) {
+                        if (!val!.isNotEmpty) {
+                          return "Sets cannot be empty!";
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        print('name: ' + value!);
+                        widget.workout!.name = value;
                       },
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -97,9 +130,9 @@ class _CreateWorkoutFormState extends State<CreateWorkoutForm> {
                 Expanded(
                   child: ListView.builder(
                       padding: EdgeInsets.symmetric(vertical: 0),
-                      itemCount: _setsList.length + 1,
+                      itemCount: _ItemsList.length + 1,
                       itemBuilder: (BuildContext context, int index) {
-                        if (index < _setsList.length) {
+                        if (index < _ItemsList.length) {
                           return _ItemsList[index];
                         }
                         return Container(
@@ -143,7 +176,7 @@ class _CreateWorkoutFormState extends State<CreateWorkoutForm> {
                   padding: const EdgeInsets.all(8.0),
                   child: GestureDetector(
                     onTap: () {
-                      onSavedMainForm();
+                      onSaveWorkout();
                     },
                     child: Container(
                       height: 60.0,
@@ -159,39 +192,76 @@ class _CreateWorkoutFormState extends State<CreateWorkoutForm> {
 
   void addSet() {
     setState(() {
+      _keyList.add(GlobalKey<ItemState>());
       _setsList.add(WorkoutSet());
+      _expansionStates.add(true);
+      print(_setsList.length);
     });
   }
 
   void onDelete(int index) {
     setState(() {
       _ItemsList.removeAt(index);
+      _setsList.removeAt(index);
     });
   }
 
-  bool validateAndSaveForm() {
-    final form = globalFormKey.currentState!;
-    if (form.validate()) {
+  void onExpanded(int itemInd) {
+    _expansionStates[itemInd] = !_expansionStates[itemInd];
+    _keyList[itemInd].currentState!.setState(() {});
+
+    print('Tile ${itemInd} is expanded: ${_expansionStates[itemInd]}');
+  }
+
+  //Validate main form workout.name and add sets to Workout class
+  //if uri is provided from workout instance then it is an existing form and will
+  //update existing Workout using uri otherwise will crete new Workout
+  bool validateMainForm() {
+    final form = globalFormKey.currentState;
+    if (form != null && form.validate()) {
       form.save();
       return true;
     }
+    print("Main form was invalid");
     return false;
   }
 
-  void onSavedMainForm() {
+//Validate all subforms through keylist and save them to setList
+  //to be added to Workout() model to be sent through API
+  //Fuction will end if any subform is not valid
+  bool validateSetForms() {
+    bool valid = true;
     for (int i = 0; i < _setsList.length; i++) {
-      //Validate all subforms and save them to setList to be added to workoutModel
-      Item item = _ItemsList[i] as Item;
-      if (item.isValid()) {
-        _setsList[i] = item.workoutSet!;
+      print(i);
+
+      if (_keyList[i].currentState!.validateForm()) {
+        _setsList[i] = _ItemsList[i].workoutSet!;
+        print("Item ${i} is valid");
       } else {
-        return;
+        print('Item ${i} is not valid.');
+
+        valid = false;
       }
     }
-    //Check validate main form and add sets to Workout class
-    if (validateAndSaveForm()) {
+    print("Returning from valsets");
+    return valid;
+  }
+
+//Validates subforms then main form
+  void onSaveWorkout() async {
+    var valid = validateMainForm();
+    print(valid);
+    if (validateSetForms() && valid) {
       widget.workout!.sets = _setsList;
-      //
+
+      if (workoutURI != null) {
+        print("Updating workout");
+        await api.updateWorkout(workoutURI!, widget.workout!);
+      } else {
+        print("Creating workout");
+        await api.createWorkout(widget.workout!);
+      }
     }
+    print('not both valid');
   }
 }
