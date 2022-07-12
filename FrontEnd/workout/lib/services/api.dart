@@ -210,6 +210,7 @@ class APIService {
   }
 
   Future<void> createWorkout(Workout newWorkout) async {
+    print(newWorkout.toJson());
     final http.Response response = await http.post(Uri.parse(_workoutURL),
         headers: <String, String>{
           "Content-Type": "application/json",
@@ -217,12 +218,20 @@ class APIService {
           'Authorization': 'Bearer $accessToken',
         },
         body: jsonEncode(newWorkout.toJson()));
-
-    if (response.statusCode < 200 ||
-        response.statusCode > 400 ||
+    if (response.statusCode == 401) {
+      print("Credentials invalid. Will try refresh token");
+      bool tokenValid = await getRefreshToken();
+      if (tokenValid) {
+        createWorkout(newWorkout);
+      } else {
+        print("cant create workout w token");
+      }
+    } else if (response.statusCode < 200 ||
+        response.statusCode >= 400 ||
         response == '') {
       print("Error creating workout: ");
       print(response.statusCode);
+      print(response.body);
     } else {
       Map<String, dynamic> res = json.decode(response.body);
       if (res['detail'] != '') {

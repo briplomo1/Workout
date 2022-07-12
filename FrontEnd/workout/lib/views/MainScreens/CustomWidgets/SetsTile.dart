@@ -10,18 +10,18 @@ import 'DropdownExercises.dart';
 
 class Item extends StatefulWidget {
   final Function onDelete;
-  final Function onExpanded;
-  //final state = _ItemState();
+  bool isExpanded;
   // Need to add functionality to take from prevoious values of set
   WorkoutSet? workoutSet;
-  bool expanded;
+  //bool expanded;
   final int itemIndex;
 
   Item({
+    required this.isExpanded,
     required this.itemIndex,
     required this.onDelete,
-    required this.onExpanded,
-    required this.expanded,
+    //required this.onExpanded,
+    //required this.expanded,
     required Key key,
     this.workoutSet,
   }) : super(key: key);
@@ -38,7 +38,6 @@ class ItemState extends State<Item> {
   final GlobalKey<FormState> form = new GlobalKey();
 
   bool validateForm() {
-    widget.onExpanded(widget.itemIndex);
     var valid = form.currentState!.validate();
     print('Validate form');
     if (form.currentState != null && valid) {
@@ -89,230 +88,244 @@ class ItemState extends State<Item> {
     super.dispose();
   }
 
+  void expandTile() {
+    setState(() {
+      widget.isExpanded = !widget.isExpanded;
+    });
+  }
+
 ////////////////////////////////////////////////////////
 
   Widget _getTilesList() {
     print('Rebuilding set');
-    print(widget.expanded);
+    print(widget.isExpanded);
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 20),
       child: Container(
         decoration: getFormBoxDecor(context),
         child: Form(
           key: form,
-          child: ExpansionTile(
-            key: Key(widget.itemIndex.toString()),
-            maintainState: true,
-            backgroundColor: Colors.transparent,
-            collapsedBackgroundColor: Colors.transparent,
-            collapsedIconColor: Color.fromARGB(255, 57, 248, 255),
-            iconColor: Color.fromARGB(255, 57, 248, 255),
-            initiallyExpanded: widget.expanded,
-            onExpansionChanged: (bool newVal) {
-              print('on expansion changed: ');
+          child: ExpansionPanelList(
+            expansionCallback: (panelIndex, isExpanded) => expandTile(),
+            children: [
+              ExpansionPanel(
+                //maintainState: true,
+                backgroundColor: Colors.transparent,
+                //collapsedBackgroundColor: Colors.transparent,
+                //collapsedIconColor: Color.fromARGB(255, 57, 248, 255),
+                //iconColor: Color.fromARGB(255, 57, 248, 255),
+                //initiallyExpanded: expanded,
+                // onExpansionChanged: (bool newVal) {
+                //   print('on expansion changed: ');
 
-              setState(() {
-                widget.onExpanded(widget.itemIndex);
-              });
-            },
-            title: widget.expanded == true
-                ? Container(
-                    height: 1.0,
-                  )
-                : Container(
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                            flex: 2,
-                            child: Text(
-                              _exercise == null
-                                  ? '?'
-                                  : _exercise!.length > 10
-                                      ? _exercise!.replaceRange(
-                                          10, _exercise!.length, '...')
-                                      : _exercise!,
-                              style: TextStyle(
-                                color: Colors.grey[500],
-                                fontSize: 16.0,
+                //   setState(() {
+                //     expanded = !expanded;
+                //   });
+                // },
+
+                isExpanded: widget.isExpanded,
+                headerBuilder: (BuildContext context, bool isExpanded) =>
+                    widget.isExpanded == true
+                        ? Container(
+                            height: 1.0,
+                          )
+                        : Container(
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                    flex: 2,
+                                    child: Text(
+                                      _exercise == null
+                                          ? '?'
+                                          : _exercise!.length > 10
+                                              ? _exercise!.replaceRange(
+                                                  10, _exercise!.length, '...')
+                                              : _exercise!,
+                                      style: TextStyle(
+                                        color: Colors.grey[500],
+                                        fontSize: 16.0,
+                                      ),
+                                    )),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Expanded(
+                                    child: Text(
+                                  _setsController.text.toString(),
+                                  textAlign: TextAlign.center,
+                                  style: getFormTextStyle(),
+                                )),
+                                SizedBox(
+                                  width: 20,
+                                  child: Text(
+                                    'X',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: Colors.grey[700]),
+                                  ),
+                                ),
+                                Expanded(
+                                    child: Text(
+                                  _weightController.text,
+                                  textAlign: TextAlign.center,
+                                  style: getFormTextStyle(),
+                                )),
+                                SizedBox(
+                                  width: 20,
+                                  child: Text(
+                                    'X',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: Colors.grey[700]),
+                                  ),
+                                ),
+                                Expanded(
+                                    child: Text(
+                                  _repsController.text,
+                                  textAlign: TextAlign.center,
+                                  style: getFormTextStyle(),
+                                )),
+                              ],
+                            ),
+                          ),
+                body: Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(15, 8, 15, 8),
+                          child: Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: DropDownFormField(
+                                  border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.transparent, width: 2.0),
+                                  ),
+
+                                  //////////////////////////////
+                                  hintText: 'Exercise',
+                                  value: _exercise,
+                                  onSaved: (newValue) {
+                                    widget.workoutSet!.exercise =
+                                        _exercise ?? '';
+                                  },
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      _exercise = newValue;
+                                    });
+                                  },
+                                  dataSource: [
+                                    'Bench Press',
+                                    'Squat',
+                                    'Dumbell Flies',
+                                    'Deadlift',
+                                    'RDL',
+                                    'Dumbell Bicep Curl'
+                                  ],
+                                  textField: 'display',
+                                  valueField: 'value',
+                                ),
                               ),
-                            )),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Expanded(
-                            child: Text(
-                          _setsController.text.toString(),
-                          textAlign: TextAlign.center,
-                          style: getFormTextStyle(),
-                        )),
-                        SizedBox(
-                          width: 20,
-                          child: Text(
-                            'X',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.grey[700]),
+                            ],
                           ),
                         ),
-                        Expanded(
-                            child: Text(
-                          _weightController.text,
-                          textAlign: TextAlign.center,
-                          style: getFormTextStyle(),
-                        )),
-                        SizedBox(
-                          width: 20,
-                          child: Text(
-                            'X',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.grey[700]),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(15, 20, 15, 15),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  child: TextFormField(
+                                onSaved: (value) {
+                                  widget.workoutSet!.sets = int.parse(value!);
+                                },
+                                validator: (value) {
+                                  if (!value!.isNotEmpty) {
+                                    return "Sets cannot be empty!";
+                                  }
+                                  return null;
+                                },
+                                onChanged: (value) {
+                                  setState(() {});
+                                },
+                                controller: _setsController,
+                                keyboardType: TextInputType.number,
+                                style: getFormTextStyle(),
+                                decoration:
+                                    getNumberFieldDecoration('Sets', context),
+                              )),
+                              SizedBox(
+                                width: 50,
+                                child: Center(
+                                  child: Text(
+                                    'X',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Colors.grey[700],
+                                        fontSize: 15.0),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                  child: TextFormField(
+                                onSaved: (newValue) {
+                                  widget.workoutSet!.weight =
+                                      double.parse(newValue!);
+                                },
+                                validator: (value) {
+                                  ////////////////////////////
+                                  if (!value!.isNotEmpty) {
+                                    return "Weight cannot be empty!";
+                                  }
+                                  return null;
+                                },
+                                onChanged: (value) {
+                                  setState(() {});
+                                },
+                                controller: _weightController,
+                                keyboardType: TextInputType.number,
+                                style: getFormTextStyle(),
+                                decoration:
+                                    getNumberFieldDecoration('Weight', context),
+                              )),
+                              SizedBox(
+                                width: 50,
+                                child: Center(
+                                  child: Text(
+                                    'X',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Colors.grey[700],
+                                        fontSize: 15.0),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                  child: TextFormField(
+                                onSaved: (newValue) => widget.workoutSet!.reps =
+                                    int.parse(newValue!),
+                                validator: (value) {
+                                  ///////////////////////////
+                                  if (!value!.isNotEmpty) {
+                                    return "Reps cannot be empty!";
+                                  }
+                                  return null;
+                                },
+                                onChanged: (value) {
+                                  setState(() {});
+                                },
+                                controller: _repsController,
+                                keyboardType: TextInputType.number,
+                                style: getFormTextStyle(),
+                                decoration:
+                                    getNumberFieldDecoration('Reps', context),
+                              )),
+                            ],
                           ),
                         ),
-                        Expanded(
-                            child: Text(
-                          _repsController.text,
-                          textAlign: TextAlign.center,
-                          style: getFormTextStyle(),
-                        )),
                       ],
                     ),
-                  ),
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Container(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(15, 8, 15, 8),
-                        child: Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: DropDownFormField(
-                                border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0)),
-                                  borderSide: BorderSide(
-                                      color: Colors.transparent, width: 2.0),
-                                ),
-
-                                //////////////////////////////
-                                hintText: 'Exercise',
-                                value: _exercise,
-                                onSaved: (newValue) {
-                                  widget.workoutSet!.exercise = _exercise ?? '';
-                                },
-                                onChanged: (newValue) {
-                                  setState(() {
-                                    _exercise = newValue;
-                                  });
-                                },
-                                dataSource: [
-                                  'Bench Press',
-                                  'Squat',
-                                  'Dumbell Flies',
-                                  'Deadlift',
-                                  'RDL',
-                                  'Dumbell Bicep Curl'
-                                ],
-                                textField: 'display',
-                                valueField: 'value',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(15, 20, 15, 15),
-                        child: Row(
-                          children: [
-                            Expanded(
-                                child: TextFormField(
-                              onSaved: (value) {
-                                widget.workoutSet!.sets = int.parse(value!);
-                              },
-                              validator: (value) {
-                                if (!value!.isNotEmpty) {
-                                  return "Sets cannot be empty!";
-                                }
-                                return null;
-                              },
-                              onChanged: (value) {
-                                setState(() {});
-                              },
-                              controller: _setsController,
-                              keyboardType: TextInputType.number,
-                              style: getFormTextStyle(),
-                              decoration:
-                                  getNumberFieldDecoration('Sets', context),
-                            )),
-                            SizedBox(
-                              width: 50,
-                              child: Center(
-                                child: Text(
-                                  'X',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.grey[700], fontSize: 15.0),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                                child: TextFormField(
-                              onSaved: (newValue) {
-                                widget.workoutSet!.weight =
-                                    double.parse(newValue!);
-                              },
-                              validator: (value) {
-                                ////////////////////////////
-                                if (!value!.isNotEmpty) {
-                                  return "Weight cannot be empty!";
-                                }
-                                return null;
-                              },
-                              onChanged: (value) {
-                                setState(() {});
-                              },
-                              controller: _weightController,
-                              keyboardType: TextInputType.number,
-                              style: getFormTextStyle(),
-                              decoration:
-                                  getNumberFieldDecoration('Weight', context),
-                            )),
-                            SizedBox(
-                              width: 50,
-                              child: Center(
-                                child: Text(
-                                  'X',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.grey[700], fontSize: 15.0),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                                child: TextFormField(
-                              onSaved: (newValue) => widget.workoutSet!.reps =
-                                  int.parse(newValue!),
-                              validator: (value) {
-                                ///////////////////////////
-                                if (!value!.isNotEmpty) {
-                                  return "Reps cannot be empty!";
-                                }
-                                return null;
-                              },
-                              onChanged: (value) {
-                                setState(() {});
-                              },
-                              controller: _repsController,
-                              keyboardType: TextInputType.number,
-                              style: getFormTextStyle(),
-                              decoration:
-                                  getNumberFieldDecoration('Reps', context),
-                            )),
-                          ],
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ),
@@ -325,6 +338,7 @@ class ItemState extends State<Item> {
 
   @override
   Widget build(BuildContext context) {
+    print('build widget');
     return _getTilesList();
   }
 }

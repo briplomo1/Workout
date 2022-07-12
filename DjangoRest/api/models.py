@@ -23,8 +23,9 @@ class UserProfile(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     dob = models.DateField()
 
+
 class Exercise(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField( max_length=50, unique=True, primary_key=True)
 
     def __str__(self):
         return self.name
@@ -33,12 +34,11 @@ class Exercise(models.Model):
 class Set(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='sets')  
     date = models.DateTimeField(auto_now_add=True)
-    exercise = models.ManyToManyField(Exercise, )
     reps = models.PositiveSmallIntegerField()
     weight = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return self.exercise.all().first().name
+        return self.exercise.name
 
 
 
@@ -54,10 +54,11 @@ class Workout(models.Model):
 class WorkoutSet(models.Model):
     setNum = models.PositiveSmallIntegerField()
     workout = models.ForeignKey(Workout, on_delete=models.CASCADE, related_name='workout_sets')
-    exercise = models.ManyToManyField(Exercise,)
+    # set to nullable after serializing is done
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE, related_name='workout_sets')
     weight = models.DecimalField(max_digits=10, decimal_places=2)
     reps = models.PositiveSmallIntegerField()
 
     def __str__(self):
-        return self.exercise.all().first().name
+        return str(self.weight)
     

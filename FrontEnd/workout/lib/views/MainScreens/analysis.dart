@@ -7,6 +7,8 @@ import '../../models/models.dart';
 import 'CustomWidgets/DropdownExercises.dart';
 import 'CustomWidgets/SetsTile.dart';
 
+///add is expanded to each item
+
 class AnalysisScreen extends StatefulWidget {
   @override
   _AnalysisScreenState createState() => _AnalysisScreenState();
@@ -25,7 +27,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 }
 
 class CreateWorkoutForm extends StatefulWidget {
-  Workout? workout;
+  Workout? workout = new Workout();
 
   CreateWorkoutForm({this.workout});
 
@@ -57,26 +59,17 @@ class _CreateWorkoutFormState extends State<CreateWorkoutForm> {
     super.initState();
     //if there is an existing workout we are editing: populates lists of sets
     //with exisitng sets in workout otherwise returns empty list
-    widget.workout =
-        widget.workout == null ? new Workout(sets: _setsList) : widget.workout!;
-    widget.workout!.sets =
-        widget.workout != null ? widget.workout!.sets : <WorkoutSet>[];
+    widget.workout = widget.workout ?? new Workout();
+    _setsList =
+        widget.workout!.sets != null ? widget.workout!.sets! : <WorkoutSet>[];
     for (int i = 0; i < _setsList.length; i++) {
       _expansionStates.add(true);
       _keyList.add(new GlobalKey<ItemState>());
       print(_keyList.length);
-      // _ItemsList.add(Item(
-      //   itemIndex: i,
-      //   onDelete: onDelete,
-      //   onExpanded: onExpanded,
-      //   key: _keyList[i],
-      //   workoutSet: _setsList[i],
-      //   expanded: _expansionStates[i],
-      // ));
     }
 
     _workoutNameController = TextEditingController(
-        text: widget.workout!.name != null ? widget.workout!.name : '');
+        text: widget.workout != null ? widget.workout!.name : '');
   }
 
   @override
@@ -88,8 +81,7 @@ class _CreateWorkoutFormState extends State<CreateWorkoutForm> {
       _ItemsList.add(Item(
           itemIndex: i,
           onDelete: onDelete,
-          onExpanded: onExpanded,
-          expanded: _expansionStates[i],
+          isExpanded: _expansionStates[i],
           key: _keyList[i]));
     }
 
@@ -114,7 +106,8 @@ class _CreateWorkoutFormState extends State<CreateWorkoutForm> {
                         return null;
                       },
                       onSaved: (value) {
-                        print('name: ' + value!);
+                        print(widget.workout);
+
                         widget.workout!.name = value;
                       },
                       textAlign: TextAlign.center,
@@ -206,13 +199,6 @@ class _CreateWorkoutFormState extends State<CreateWorkoutForm> {
     });
   }
 
-  void onExpanded(int itemInd) {
-    _expansionStates[itemInd] = !_expansionStates[itemInd];
-    _keyList[itemInd].currentState!.setState(() {});
-
-    print('Tile ${itemInd} is expanded: ${_expansionStates[itemInd]}');
-  }
-
   //Validate main form workout.name and add sets to Workout class
   //if uri is provided from workout instance then it is an existing form and will
   //update existing Workout using uri otherwise will crete new Workout
@@ -238,6 +224,10 @@ class _CreateWorkoutFormState extends State<CreateWorkoutForm> {
         _setsList[i] = _ItemsList[i].workoutSet!;
         print("Item ${i} is valid");
       } else {
+        if (_ItemsList[i].isExpanded == false) {
+          _keyList[i].currentState!.expandTile();
+        }
+
         print('Item ${i} is not valid.');
 
         valid = false;
@@ -250,7 +240,7 @@ class _CreateWorkoutFormState extends State<CreateWorkoutForm> {
 //Validates subforms then main form
   void onSaveWorkout() async {
     var valid = validateMainForm();
-    print(valid);
+    print("mani form is: " + valid.toString());
     if (validateSetForms() && valid) {
       widget.workout!.sets = _setsList;
 
@@ -259,6 +249,8 @@ class _CreateWorkoutFormState extends State<CreateWorkoutForm> {
         await api.updateWorkout(workoutURI!, widget.workout!);
       } else {
         print("Creating workout");
+        print(widget.workout!.name);
+        print(widget.workout!.sets![0].exercise);
         await api.createWorkout(widget.workout!);
       }
     }

@@ -71,13 +71,13 @@ class Workout {
   String? url;
   String? name;
   DateTime? dateCreated;
-  List<WorkoutSet> sets;
+  List<WorkoutSet>? sets;
   // Implement tojson
   Workout({
     this.url,
     this.name,
     this.dateCreated,
-    required this.sets,
+    this.sets,
   });
   factory Workout.fromJson(Map<String, dynamic> data) {
     var list = data['workout_sets'] as List;
@@ -92,9 +92,10 @@ class Workout {
     );
   }
   Map<String, dynamic> toJson() {
+    List<Map<String, dynamic>> s = sets!.map((e) => e.toJson()).toList();
     return <String, dynamic>{
       'name': name,
-      'workout_sets': sets,
+      'workout_sets': s,
     };
   }
 }
@@ -128,10 +129,12 @@ class WorkoutSet {
   }
 // Implement tojson
   Map<String, dynamic> toJson() {
+    int ex = 1;
     return <String, dynamic>{
-      'exercise': exercise,
+      'exercise': 'Bench Press',
       'reps': reps,
       'weight': weight,
+      'setNum': sets,
     };
   }
 }
@@ -158,6 +161,11 @@ class Exercise {
     return Exercise(
       name: json['name'],
     );
+  }
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'id': 1,
+    };
   }
 }
 

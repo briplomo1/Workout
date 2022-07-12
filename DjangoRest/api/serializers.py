@@ -8,21 +8,34 @@ class ExerciseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Exercise
         fields = ['name']
+        
 
 
 class WorkoutSetSerializer(serializers.ModelSerializer):
-    #workout = serializers.HyperlinkedRelatedField( view_name='workout-detail', many=True, read_only=True)
-    #exercise = ExerciseSerializer(read_only=True, many=True)
+    
+    #exercise = serializers.PrimaryKeyRelatedField(queryset=Exercise.objects.all())
     
     class Meta:
-        
         model = WorkoutSet
-        fields = ['id','exercise','workout','reps', 'weight', 'setNum',]
- 
+        fields = ['id','reps','exercise','weight', 'setNum',]
+
+    
+    # def create(self, validated_data,):
+
+    #     exercise_data = validated_data.pop('exercise')
+    #     print(exercise_data)
+    #     ex = Exercise.objects.get(name="Squat")
+    #     workoutSet = super().create(exercise=ex.name, )
+         
+    #     print('create')
+        
+    #     workoutSet.save()
+    #     return workoutSet
+        
+        
 
 class WorkoutSerializer(serializers.HyperlinkedModelSerializer):
-    #owner = serializers.UserSerializers(read_only=True)
-    workout_sets = WorkoutSetSerializer(many=True, read_only = True)
+    workout_sets = WorkoutSetSerializer(required=False,many=True)
     class Meta:
         
         model = Workout
@@ -30,19 +43,24 @@ class WorkoutSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ['owner', 'date_created']
 
     def create(self, validated_data):
+        print(validated_data)
         workout_sets = validated_data.pop('workout_sets')
         workout_instance = Workout.objects.create(**validated_data)
         for set in workout_sets:
-            WorkoutSet.objects.create(workout=workout_instance, **set)
+            ex = set.pop('exercise')
+            print(ex)
+            wset_instance = WorkoutSet.objects.create(workout=workout_instance, exercise=ex, **set)
+            wset_instance.save()
+        workout_instance.save()
         return workout_instance
 
 
 class SetSerializer(serializers.ModelSerializer):
     #owner = serializers.HyperlinkedRelatedField(view_name='user-detail', read_only=True,)
-    exercise = ExerciseSerializer(read_only=True, many=True)
+    exercise = ExerciseSerializer(read_only=True)
     class Meta:
         model = Set
-        fields = ['url', 'owner', 'date', 'reps', 'weight', 'exercise']
+        fields = ['url', 'owner', 'date', 'reps', 'weight', 'exercise'] 
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
