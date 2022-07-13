@@ -129,9 +129,8 @@ class WorkoutSet {
   }
 // Implement tojson
   Map<String, dynamic> toJson() {
-    int ex = 1;
     return <String, dynamic>{
-      'exercise': 'Bench Press',
+      'exercise': exercise,
       'reps': reps,
       'weight': weight,
       'setNum': sets,
@@ -156,16 +155,11 @@ class LoginResponse {
 class Exercise {
   String? name;
 
-  Exercise({this.name});
+  Exercise({
+    this.name,
+  });
   factory Exercise.fromJson(Map<String, dynamic> json) {
-    return Exercise(
-      name: json['name'],
-    );
-  }
-  Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'id': 1,
-    };
+    return Exercise(name: json['name']);
   }
 }
 

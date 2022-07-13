@@ -178,8 +178,12 @@ class APIService {
   }
 
 //Gets list of all database exercises
-  Future<List<Exercise>> getExercises() async {
+  Future<List<Exercise>?> getExercises() async {
+    bool tokenValid = await getRefreshToken();
     List<Exercise>? exercises;
+    if (!tokenValid) {
+      return null;
+    }
     final http.Response? response = await http.get(
       Uri.parse(_exercisesURL),
       headers: <String, String>{
@@ -187,15 +191,15 @@ class APIService {
         "Accept": "application/json"
       },
     );
-
+    print(response?.body);
     if (response == null) {
       print("Response was null");
       throw Exception('Get exercises response was null');
     } else {
-      List<Map<String, String>> res = json.decode(response.body);
-      if (response.statusCode < 200 || response.statusCode > 400) {
+      List<dynamic> res = json.decode(response.body);
+      if (response.statusCode < 200 || response.statusCode >= 400) {
         print('Error: ' + response.statusCode.toString());
-        throw Exception('Error: ' + response.statusCode.toString());
+        throw Exception('Error: ' + response.body);
       } else {
         res == []
             ? exercises = []
@@ -205,43 +209,68 @@ class APIService {
     }
   }
 
-  Future<List<Workout>> getWorkouts() async {
-    return [];
-  }
+  Future<List<Workout>?> getWorkouts() async {
+    bool tokenValid = await getRefreshToken();
 
-  Future<void> createWorkout(Workout newWorkout) async {
-    print(newWorkout.toJson());
-    final http.Response response = await http.post(Uri.parse(_workoutURL),
+    if (tokenValid) {
+      final http.Response response = await http.get(
+        Uri.parse(_workoutURL),
         headers: <String, String>{
           "Content-Type": "application/json",
           "Accept": "application/json",
           'Authorization': 'Bearer $accessToken',
         },
-        body: jsonEncode(newWorkout.toJson()));
-    if (response.statusCode == 401) {
-      print("Credentials invalid. Will try refresh token");
-      bool tokenValid = await getRefreshToken();
-      if (tokenValid) {
-        createWorkout(newWorkout);
+      );
+      if (response.statusCode < 200 ||
+          response.statusCode >= 400 ||
+          response == '') {
+        print("Error getting exercises: ");
+        print(response.statusCode);
+        print(response.body);
+        throw CantGetExercises("Error getting exercises: ${response.body}");
       } else {
-        print("cant create workout w token");
-      }
-    } else if (response.statusCode < 200 ||
-        response.statusCode >= 400 ||
-        response == '') {
-      print("Error creating workout: ");
-      print(response.statusCode);
-      print(response.body);
-    } else {
-      Map<String, dynamic> res = json.decode(response.body);
-      if (res['detail'] != '') {
-        print(res['detail']);
-      } else {
-        print("succeeded in creating workout");
+        Map<String, dynamic> res = json.decode(response.body);
+        if (res['detail'] != '') {
+          print(res['detail']);
+        } else {
+          print("succeeded in creating workout");
+        }
       }
     }
 
-    //
+    return [];
+  }
+
+//Find a way to logout user when refresh token is invalid
+  Future<void> createWorkout(Workout newWorkout) async {
+    print(newWorkout.toJson());
+    bool tokenValid = await getRefreshToken();
+    if (tokenValid) {
+      final http.Response response = await http.post(Uri.parse(_workoutURL),
+          headers: <String, String>{
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            'Authorization': 'Bearer $accessToken',
+          },
+          body: jsonEncode(newWorkout.toJson()));
+      if (response.statusCode < 200 ||
+          response.statusCode >= 400 ||
+          response == '') {
+        print("Error creating workout: ");
+        print(response.statusCode);
+        print(response.body);
+        throw CantCreateWorkout("Error creating workout: ${response.body}");
+      } else {
+        Map<String, dynamic> res = json.decode(response.body);
+        if (res['detail'] != '') {
+          print(res['detail']);
+        } else {
+          print("succeeded in creating workout");
+        }
+      }
+    } else {
+      // Do if token is invalid?????????????????????????????????????????????
+    }
   }
 
   Future<void> updateWorkout(String url, Workout updatedWorkout) async {}

@@ -11,8 +11,8 @@ import 'DropdownExercises.dart';
 class Item extends StatefulWidget {
   final Function onDelete;
   bool isExpanded;
-  // Need to add functionality to take from prevoious values of set
-  WorkoutSet? workoutSet;
+  WorkoutSet? existing;
+  WorkoutSet workoutSet = new WorkoutSet();
   //bool expanded;
   final int itemIndex;
 
@@ -20,10 +20,8 @@ class Item extends StatefulWidget {
     required this.isExpanded,
     required this.itemIndex,
     required this.onDelete,
-    //required this.onExpanded,
-    //required this.expanded,
     required Key key,
-    this.workoutSet,
+    existing,
   }) : super(key: key);
 
   @override
@@ -62,22 +60,15 @@ class ItemState extends State<Item> {
     /////if workout set is supplied from existing set:
     //Current set will take on the given set's values.
     //Field controllers will be set to given values or will default.
-    widget.workoutSet = widget.workoutSet ?? new WorkoutSet();
-    _exercise = widget.workoutSet!.exercise != null
-        ? widget.workoutSet!.exercise
-        : null;
+    widget.workoutSet = widget.existing ?? new WorkoutSet();
+    _exercise = widget.existing != null ? widget.workoutSet.exercise : null;
     _setsController = TextEditingController(
-        text: widget.workoutSet!.sets != null
-            ? widget.workoutSet!.sets.toString()
-            : '');
+        text: widget.existing != null ? widget.existing!.sets.toString() : '');
     _weightController = TextEditingController(
-        text: widget.workoutSet!.weight != null
-            ? widget.workoutSet!.weight.toString()
-            : '');
+        text:
+            widget.existing != null ? widget.existing!.weight.toString() : '');
     _repsController = TextEditingController(
-        text: widget.workoutSet!.reps != null
-            ? widget.workoutSet!.reps.toString()
-            : '');
+        text: widget.existing != null ? widget.existing!.reps.toString() : '');
   }
 
   @override
@@ -109,20 +100,7 @@ class ItemState extends State<Item> {
             expansionCallback: (panelIndex, isExpanded) => expandTile(),
             children: [
               ExpansionPanel(
-                //maintainState: true,
                 backgroundColor: Colors.transparent,
-                //collapsedBackgroundColor: Colors.transparent,
-                //collapsedIconColor: Color.fromARGB(255, 57, 248, 255),
-                //iconColor: Color.fromARGB(255, 57, 248, 255),
-                //initiallyExpanded: expanded,
-                // onExpansionChanged: (bool newVal) {
-                //   print('on expansion changed: ');
-
-                //   setState(() {
-                //     expanded = !expanded;
-                //   });
-                // },
-
                 isExpanded: widget.isExpanded,
                 headerBuilder: (BuildContext context, bool isExpanded) =>
                     widget.isExpanded == true
@@ -208,7 +186,7 @@ class ItemState extends State<Item> {
                                   hintText: 'Exercise',
                                   value: _exercise,
                                   onSaved: (newValue) {
-                                    widget.workoutSet!.exercise =
+                                    widget.workoutSet.exercise =
                                         _exercise ?? '';
                                   },
                                   onChanged: (newValue) {
@@ -238,7 +216,7 @@ class ItemState extends State<Item> {
                               Expanded(
                                   child: TextFormField(
                                 onSaved: (value) {
-                                  widget.workoutSet!.sets = int.parse(value!);
+                                  widget.workoutSet.sets = int.parse(value!);
                                 },
                                 validator: (value) {
                                   if (!value!.isNotEmpty) {
@@ -270,7 +248,7 @@ class ItemState extends State<Item> {
                               Expanded(
                                   child: TextFormField(
                                 onSaved: (newValue) {
-                                  widget.workoutSet!.weight =
+                                  widget.workoutSet.weight =
                                       double.parse(newValue!);
                                 },
                                 validator: (value) {
@@ -303,7 +281,7 @@ class ItemState extends State<Item> {
                               ),
                               Expanded(
                                   child: TextFormField(
-                                onSaved: (newValue) => widget.workoutSet!.reps =
+                                onSaved: (newValue) => widget.workoutSet.reps =
                                     int.parse(newValue!),
                                 validator: (value) {
                                   ///////////////////////////
