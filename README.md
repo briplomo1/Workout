@@ -1,2 +1,2 @@
 # Workout
-App to log and provide logisitcs on workout data
+App to log and provide logistics on workout data
