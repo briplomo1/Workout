@@ -13,7 +13,7 @@ class ExerciseViewSet(viewsets.ModelViewSet):
         if self.action in ['update', 'partial-update', 'destroy', 'create']:
             permission_classes = [IsAdminUser]
         elif self.action in ['list', 'retrieve']:
-            permission_classes = [permissions.IsAuthenticated]
+            permission_classes = [IsUserOrAdmin]
         return [permission() for permission in permission_classes]   
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -37,7 +37,7 @@ class WorkoutSetsViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         permission_classes= []
         if self.action == 'create':
-            permission_classes = [permissions.IsAuthenticated]
+            permission_classes = [permissions.IsAuthenticated, IsAdminUser]
         elif self.action in ['retrieve', 'update', 'partial-update', 'destroy']:
             permission_classes = [IsUserOrAdmin]
         elif self.action == 'list':
